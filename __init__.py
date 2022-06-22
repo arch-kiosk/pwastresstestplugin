@@ -72,10 +72,9 @@ if "mcpcore.mcpworker" not in sys.modules:
 
     def register_global_routes() -> List[Union[str, Tuple[str, str]]]:
         global plugin
-        return ["kioskreportingdock.create_kiosk_workstation",
-                ("kioskreportingdock.workstation_actions", "/kioskreportingdock/actions"),
-                ("kioskreportingdock.edit", "/kioskreportingdock/reportingdock"),
-                ("kioskreportingdock.trigger_upload", "/kioskreportingdock/trigger_upload")
+        return ["kioskpwastresstestdock.create_kiosk_workstation",
+                ("kioskpwastresstestdock.workstation_actions", "/kioskpwastresstestdock/actions"),
+                ("kioskpwastresstestdock.edit", "/kioskpwastresstestdock/pwastresstestdock"),
                 ]
 
 
