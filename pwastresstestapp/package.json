@@ -1,0 +1,44 @@
+{
+  "name": "pwastresstestapp",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/pwastresstestapp.js",
+  "exports": {
+    ".": "./dist/pwastresstestapp.js"
+  },
+  "types": "types/pwastresstestapp.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc && vite build --emptyOutDir"
+  },
+  "dependencies": {
+    "@adobe/lit-mobx": "^2.0.0",
+    "@vaadin/button": "^23.1.6",
+    "@vaadin/text-field": "^23.1.6",
+    "@vaadin/vaadin-dialog": "^23.1.6",
+    "@vaadin/vaadin-menu-bar": "^23.1.4",
+    "@vaadin/vertical-layout": "^23.1.6",
+    "idb": "^7.0.2",
+    "lit": "^2.3.1",
+    "mobx": "^6.6.1"
+  },
+  "prettier": {
+    "semi": true,
+    "trailingComma": "all",
+    "singleQuote": false,
+    "printWidth": 120,
+    "tabWidth": 4
+  },
+  "devDependencies": {
+    "sass": "^1.54.5",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-pwa": "^0.12.3"
+  }
+}
