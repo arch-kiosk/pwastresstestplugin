@@ -1,10 +1,4 @@
-import { openDB} from 'idb';
-
-const dbSettings = openDB('pwastresstest', 1, {
-    upgrade(db) {
-        db.createObjectStore('settings');
-    },
-});
+import {dbPWA} from "./dbpwa";
 
 export class Settings {
     server_address: string = ""
@@ -16,7 +10,7 @@ export class Settings {
         return !(this.server_address === "" || this.user_id === "" || this.dock_id === "" || this.password === "")
     }
     async save() {
-        let db = (await dbSettings)
+        let db = (await dbPWA)
         await db.put('settings',
             {
                 server_address: this.server_address,
@@ -27,7 +21,7 @@ export class Settings {
 
     }
     async load() {
-        let db = (await dbSettings)
+        let db = (await dbPWA)
         let settings = await db.get('settings','settings')
         this.server_address = settings.server_address
         this.user_id = settings.userid

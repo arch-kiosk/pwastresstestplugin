@@ -4,16 +4,12 @@ import {
     API_STATE_ERROR,
     API_STATE_INITIALIZING,
     API_STATE_READY,
-    API_STATE_UNINITIALZED,
 } from "./kioskapi";
 
 import {appState} from "../models/state";
 
 export class PWAKioskApi extends KioskApi {
-    token = "";
-    lastErrorMessage = "";
     kioskRoutes: { [key: string]: string } | null = null
-    status = API_STATE_UNINITIALZED;
     private apiBaseAddress = "http://localhost:5000/"
     private userId: String = ""
     private password: String = ""
@@ -71,8 +67,6 @@ export class PWAKioskApi extends KioskApi {
         headers.append("Content-Type", "application/json");
         headers.append("Accept", "application/json");
         // @ts-ignore
-        headers.append("Content-Type", "application/json");
-        headers.append("Accept", "application/json");
         headers.append("Origin", this.getApiUrl());
 
         let address = this.getApiUrl("login");

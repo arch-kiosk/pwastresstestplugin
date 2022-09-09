@@ -265,3 +265,6 @@ class KioskPWAStressTestDock(KioskDock):
             else:
                 return "This workstation is waiting for the admin. " \
                        "Right now, there is not really anything to do for you here."
+
+    def get_image_records(self) -> list[dict[str, str]]:
+        return self._sync_ws.get_images_records()

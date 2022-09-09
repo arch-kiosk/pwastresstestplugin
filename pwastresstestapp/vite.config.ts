@@ -1,22 +1,26 @@
-import { defineConfig, searchForWorkspaceRoot, loadEnv } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import {VitePWA } from 'vite-plugin-pwa'
 import { createHtmlPlugin } from "vite-plugin-html";
 
-// https://vitejs.dev/config/
-export default defineConfig(({command, mode}) => {
+export default defineConfig(({mode}) => {
   const env = loadEnv(mode, "env");
   return {
     build: {
-      lib: {
-        entry: 'index.html',
-        formats: ['es']
-      },
-      rollupOptions: {
-        external: /^lit/
-      },
     },
+    // publicDir: "dev-dist",
     plugins: [VitePWA({
-      registerType: 'autoUpdate'
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      injectManifest: {
+        globPatterns: ['**/*.html', '**/*.js', '**/*.css', '**/*.ttf', '**/*.woff2']
+      },
+      filename: 'sw.js',
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+        type: "module",
+        navigateFallback: 'index.html'
+      }
     }),
       createHtmlPlugin({
         inject: {

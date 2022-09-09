@@ -16,6 +16,7 @@ if "mcpcore.mcpworker" not in sys.modules:
         PREPARE_WORKSTATIONS, EDIT_WORKSTATION_PRIVILEGE, INSTALL_PLUGIN
     from core.kioskcontrollerplugin import KioskControllerPlugin
     from kioskmenuitem import KioskMenuItem
+    from .pwastresstestdockapi import register_resources
     from .kioskpwastresstestdockcontroller import kioskpwastresstestdock
     from .kioskpwastresstestdockcontroller import plugin_version, init_controller
     from flask_login import current_user
@@ -34,7 +35,19 @@ if "mcpcore.mcpworker" not in sys.modules:
         KioskPWAStressTestDock.register_types(app.type_repository)
         init_controller()
 
+        if api:
+            register_api(api)
+            return True
+        else:
+            logging.error("syncmanager/package.init_app: api is None.")
+            print("syncmanager/package.init_app - Error: api is None.")
+            return False
+
         return True
+
+    def register_api(api):
+        register_resources(api)
+        print(f"api /api/kioskpwastresstestdock initialized.")
 
 
     def register_plugin_instance(plugin_to_register):

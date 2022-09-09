@@ -5,8 +5,10 @@ import {Settings} from "./settings";
 import {API_STATE_READY} from "../lib/kioskapi";
 import {MenuBarItem} from "@vaadin/vaadin-menu-bar";
 
-const STATE_IDLE = 1
-const STATE_IN_THE_FIELD = 2
+export const STATE_IDLE = 1
+export const STATE_IN_THE_FIELD = 2
+
+
 
 class AppState {
 
@@ -29,6 +31,15 @@ class AppState {
     }
 
     @observable
+    public docked: boolean = false
+
+    @action
+    public setDocked(docked: boolean) {
+        console.log(`appState: docked set from ${this.docked} to ${docked}`)
+        this.docked = docked
+    }
+
+    @observable
     public currentState: Number = STATE_IDLE
 
     @action
@@ -46,10 +57,16 @@ class AppState {
         switch (this.currentState) {
             case STATE_IDLE:
                 if (apiState === API_STATE_READY) {
-                    result.text = "connected"
-                    result.children = [
-                        {text: "download"},
-                        {text: "change configuration"}]
+                    if (this.docked) {
+                        result.text = "docked"
+                        result.children = [
+                            {text: "download"},
+                            {text: "change configuration"}]
+                    } else {
+                        result.text = "connected but not docked"
+                        result.children = [
+                            {text: "change configuration"}]
+                    }
                 } else {
                     if (this.settings.validate()) {
                         result.text = "not connected"
@@ -65,7 +82,7 @@ class AppState {
                 break
             case STATE_IN_THE_FIELD:
                 if (apiState === API_STATE_READY) {
-                    result.text = "connected"
+                    result.text = "connected (int the field)"
                     result.children = [
                         {text: 'upload'},
                         {text: 'reset'}

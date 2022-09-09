@@ -1,4 +1,4 @@
-import {html, unsafeCSS} from 'lit'
+import {html, unsafeCSS, nothing} from 'lit'
 import {MobxLitElement} from "@adobe/lit-mobx";
 import { customElement, state} from 'lit/decorators.js'
 import '@vaadin/vaadin-menu-bar/vaadin-menu-bar.js'
@@ -14,8 +14,10 @@ import local_css from "./component-pwastresstest-app.sass";
 import {Settings} from "./models/settings";
 // @ts-ignore
 import { observable, action } from 'mobx';
-import {appState} from "./models/state";
+import {appState, STATE_IN_THE_FIELD} from "./models/state";
 import {PWAKioskApi} from "./lib/pwakioskapi";
+import {FetchException} from "./lib/kioskapi";
+import {DownloadWorkerSuccessMessage} from "./downloadworker";
 
 // @ts-ignore
 @customElement('pwastresstest-app')
@@ -25,6 +27,13 @@ export class PWAStressTestApp extends MobxLitElement {
 
   @state()
   private dialogOpened = false;
+
+  @state()
+  private kioskError = ""
+  @state()
+  private kioskWarning = ""
+  @state()
+  private kioskMessage = ""
 
   private connectMenuItems: [MenuBarItem]= [
     {
@@ -55,6 +64,7 @@ export class PWAStressTestApp extends MobxLitElement {
       this.kioskApi.initApi()
           .then(() => {
             console.log(`call to initApi done. Api is now in state ${this.kioskApi.status}`)
+            this.connectToDock()
           })
           .catch((e) => {
             if (e.response) {
@@ -64,6 +74,63 @@ export class PWAStressTestApp extends MobxLitElement {
             }
          })
     }
+  }
+
+  private connectToDock() {
+    this.kioskApi.fetchFromApi("api/syncmanager","dock", {}, "v1", `dock_id=${this.appState.settings.dock_id}`)
+        .then((data) => {
+          this.kioskError = ""
+          console.log(data)
+          const state_text: String = data["state_text"]
+          if (!state_text.includes("forked")) {
+            this.kioskError = this.appState.settings.dock_id  + " is not in the correct state to connect"
+          }
+          appState.setDocked(true)
+        })
+        .catch((e: FetchException) => {
+          appState.setDocked(false)
+          if (e.response && e.response.status == 404) {
+            this.kioskError = this.appState.settings.dock_id  + " does not exist."
+          }
+          else {
+            this.kioskError = "Network error: " + e
+          }
+        })
+  }
+
+
+  private download() {
+    this.kioskError = ""
+    this.kioskMessage = "Downloading files, hang on ..."
+    this.kioskWarning = ""
+    let worker = new Worker("./src/downloadworker", { type: "module" })
+    let msg = {
+      msgId: "init",
+      apiRoot: this.kioskApi.apiRoot,
+      token: this.kioskApi.token,
+      dockId: this.appState.settings.dock_id
+
+    }
+    worker.onmessage = (e) => {
+      const msg: DownloadWorkerSuccessMessage = e.data
+      console.log("got message from worker:")
+      console.log(e)
+      this.kioskMessage = ""
+
+      if (msg.msgId == "result") {
+        if (msg.downloaded > 0 || msg.errors == 0) {
+          appState.setCurrentState(STATE_IN_THE_FIELD)
+        }
+        if (msg.errors > 0 && msg.downloaded == 0) {
+          this.kioskError = `All ${msg.errors} files failed to download.`
+        } else if(msg.errors > 0 && msg.downloaded > 0) {
+          this.kioskWarning = `downloaded ${msg.downloaded} files, ${msg.errors} files failed to download.`
+        } else if(msg.errors == 0) {
+          this.kioskMessage = `downloaded ${msg.downloaded} files, no errors`
+        }
+      }
+    }
+    worker.postMessage([msg])
   }
 
   menuItemSelected(e: MenuBarItemSelectedEvent) {
@@ -78,7 +145,7 @@ export class PWAStressTestApp extends MobxLitElement {
         break;
 
       case 'download':
-        alert("Download!")
+        this.download()
         break;
     }
   }
@@ -94,32 +161,6 @@ export class PWAStressTestApp extends MobxLitElement {
   calcKioskState() {
     console.log("calcKioskState")
     this.connectMenuItems = appState.getAvailableTransitions(this.kioskApi.status)
-    // if (!this.appState.apiReady) {
-    //   if (!this.appState.settings.validate()) {
-    //     this.connectMenuItems = [
-    //       {
-    //         text: 'Not configured',
-    //         children: [{text: 'change configuration'}],
-    //       },
-    //     ];
-    //   } else {
-    //     this.connectMenuItems = [
-    //       {
-    //         text: 'Not connected',
-    //         children: [
-    //             {text: 'change configuration'},
-    //             {text: 'connect'}],
-    //       },
-    //     ];
-    //   }
-    // } else {
-    //   this.connectMenuItems = [
-    //     {
-    //       text: 'Kiosk connected',
-    //       children: [{ text: 'change configuration' }],
-    //     },
-    //   ];
-    // }
   }
 
   // private close() {
@@ -179,14 +220,18 @@ export class PWAStressTestApp extends MobxLitElement {
 
   render() {
     return html`
+      ${this.kioskError? html`<div class="kioskError">${this.kioskError}</div>`: nothing}
+      ${this.kioskWarning? html`<div class="kioskWarning">${this.kioskWarning}</div>`: nothing}
+      ${this.kioskMessage? html`<div class="kioskMessage">${this.kioskMessage}</div>`: nothing}
+
       <div class="left-header">
         <button class="modal-round-button" @click="${this.refresh}"></button>
-        <vaadin-menu-bar class="${this.appState.apiReady?'menu-bar-green':'menu-bar-red'}"
+        <vaadin-menu-bar class="${this.appState.apiReady && this.appState.docked?'menu-bar-green':'menu-bar-red'}"
             .items="${this.connectMenuItems}"
             @item-selected="${this.menuItemSelected}"
         </vaadin-menu-bar> 
       </div>
-      <span>${this.appState.settings.user_id} accessing ${this.appState.settings.server_address}</span> 
+      <span>${this.appState.settings.user_id} accessing ${this.appState.settings.server_address}${appState.docked?html`/${this.appState.settings.dock_id}`:nothing}</span> 
       <vaadin-dialog
           header-title="settings"
           .opened="${this.dialogOpened}"
@@ -194,7 +239,6 @@ export class PWAStressTestApp extends MobxLitElement {
           ${dialogRenderer(this.renderDialog, [])}
           ${dialogFooterRenderer(this.renderFooter, [])}
       ></vaadin-dialog>
-
     `
   }
 

@@ -1,7 +1,8 @@
-export const API_STATE_UNINITIALZED = 0;
-export const API_STATE_INITIALIZING = 1;
-export const API_STATE_READY = 2;
-export const API_STATE_ERROR = 3;
+export const API_STATE_ERROR = -1
+
+export const API_STATE_UNINITIALZED = 0
+export const API_STATE_INITIALIZING = 1
+export const API_STATE_READY = 2
 
 export class KioskApiError extends Error {
     constructor(message: string) {
@@ -31,10 +32,11 @@ export abstract class KioskApi {
 
     status = API_STATE_UNINITIALZED;
 
-    constructor(apiRoot = "/") {
+    constructor(apiRoot = "/", token="") {
         if (!apiRoot.startsWith("/")) apiRoot = "/" + apiRoot;
         if (!apiRoot.endsWith("/")) apiRoot = apiRoot + "/";
         this.apiRoot = apiRoot;
+        this.token = token
         console.log("The apiRoot is " + this.apiRoot);
     }
 
@@ -92,4 +94,36 @@ export abstract class KioskApi {
             throw new FetchException(response.statusText, response);
         }
     }
+    getFetchFileFromApiRequest(
+        apiRoot:string,
+        apiMethod: string,
+        fetchParams: FetchParams,
+        apiVersion = "v1",
+        urlSearchParams: URLSearchParams | null = null,
+        mimetype = "application/json",
+    ): Request {
+        if (!this.token) {
+            throw new KioskApiError("No api-token when calling fetchFromApi");
+        }
+        let headers = this.getHeaders(mimetype)
+        let address = `${this.getApiUrl()}/${apiRoot}/${apiVersion}/${apiMethod}`;
+
+        if ("caller" in fetchParams)
+            console.log(`${fetchParams.caller} fetching from ${address}`);
+        else console.log("fetching from " + address);
+        let init = { ...fetchParams };
+        init["headers"] = headers;
+        if (urlSearchParams) {
+            address += "?" + urlSearchParams;
+        }
+        try {
+            console.log("fetching " + address);
+            return new Request(address, init)
+        } catch (err: any) {
+            console.log(`caught ${err} in fetchFileFromApi`);
+            throw new FetchException(err);
+        }
+    }
+
+
 }
