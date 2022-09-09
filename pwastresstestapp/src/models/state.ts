@@ -4,6 +4,7 @@ import {observable, action, makeObservable} from 'mobx';
 import {Settings} from "./settings";
 import {API_STATE_READY} from "../lib/kioskapi";
 import {MenuBarItem} from "@vaadin/vaadin-menu-bar";
+import {dbPWA} from "./dbpwa";
 
 export const STATE_IDLE = 1
 export const STATE_IN_THE_FIELD = 2
@@ -45,6 +46,7 @@ class AppState {
     @action
     public setCurrentState(currentState: Number) {
         this.currentState = currentState
+        this.saveState()
     }
 
     constructor() {
@@ -102,6 +104,17 @@ class AppState {
         }
         return [result]
 
+    }
+    async saveState() {
+        let db = (await dbPWA)
+        await db.put('settings',
+            {state: this.currentState},"appstate")
+    }
+    async loadState() {
+        let db = (await dbPWA)
+        let appstate = await db.get('settings','appstate')
+            this.currentState = appstate.state
+            console.log(`Loaded currentState: ${this.currentState}`)
     }
 }
 

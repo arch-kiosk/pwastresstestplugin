@@ -14,7 +14,7 @@ import local_css from "./component-pwastresstest-app.sass";
 import {Settings} from "./models/settings";
 // @ts-ignore
 import { observable, action } from 'mobx';
-import {appState, STATE_IN_THE_FIELD} from "./models/state";
+import {appState, STATE_IDLE, STATE_IN_THE_FIELD} from "./models/state";
 import {PWAKioskApi} from "./lib/pwakioskapi";
 import {FetchException} from "./lib/kioskapi";
 import {DownloadWorkerSuccessMessage} from "./downloadworker";
@@ -54,6 +54,10 @@ export class PWAStressTestApp extends MobxLitElement {
     settings.load().then(() => {
       this.appState.setSettings(settings)
       this.initApi()
+    })
+    appState.loadState().catch((e: any) => {
+      console.log(`load failed: ${e}`)
+      appState.setCurrentState(STATE_IDLE)
     })
   }
 
