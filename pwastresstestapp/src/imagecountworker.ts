@@ -42,14 +42,17 @@ async function countImages (templateAddress: string) {
             // @ts-ignore
             searchParams.resolution = r.res
         }
-        let address = templateAddress + new URLSearchParams(searchParams)
+        let address = templateAddress + "?" + new URLSearchParams(searchParams)
         console.log("checking address")
-        if (await cache.match(address)) {
-            console.log(`address ${address} not in cache`)
-            imagesError += 1
-        } else {
+        const request = new Request(new URL(address))
+        let response = await cache.match(request)
+        if (response && response.ok) {
             imagesDone += 1
             console.log(`address ${address} okay`)
+        } else {
+            console.log(`address ${address} not in cache`)
+            console.log(response)
+            imagesError += 1
         }
         if ((imagesError + imagesDone) % 50 == 0) {
             postMessage({
