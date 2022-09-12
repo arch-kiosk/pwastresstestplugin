@@ -1,12 +1,9 @@
 import { KioskApi } from "./kioskapi";
 export declare class PWAKioskApi extends KioskApi {
-    token: string;
-    lastErrorMessage: string;
     kioskRoutes: {
         [key: string]: string;
     } | null;
-    status: number;
-    private apiBaseAddress;
+    apiBaseAddress: string;
     private userId;
     private password;
     getKioskRoute(routeName: string): string;

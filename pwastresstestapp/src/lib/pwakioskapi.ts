@@ -10,7 +10,7 @@ import {appState} from "../models/state";
 
 export class PWAKioskApi extends KioskApi {
     kioskRoutes: { [key: string]: string } | null = null
-    private apiBaseAddress = "http://localhost:5000/"
+    public apiBaseAddress = "http://localhost:5000/"
     private userId: String = ""
     private password: String = ""
 

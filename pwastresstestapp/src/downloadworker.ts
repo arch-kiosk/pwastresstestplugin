@@ -8,6 +8,7 @@ export interface WorkerMessage {
 }
 
 export interface DownloadWorkerMessage extends WorkerMessage {
+    apiBaseAddress: string
     apiRoot: string
     token: string
     dockId: string
@@ -35,9 +36,12 @@ class DownloadWorker {
     private errors = 0
 
     constructor(msg: DownloadWorkerMessage) {
+        console.log("DownloadWorker got initialized with")
+        console.log(msg)
         this.token = msg.token
         this.dockId = msg.dockId
         this.api = new PWAKioskApi(msg.apiRoot, msg.token)
+        this.api.setApiBaseAddress(msg.apiBaseAddress)
     }
 
     execute() {

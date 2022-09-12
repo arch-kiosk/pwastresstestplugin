@@ -24,6 +24,7 @@
     "@vaadin/vaadin-dialog": "^23.1.6",
     "@vaadin/vaadin-menu-bar": "^23.1.4",
     "@vaadin/vertical-layout": "^23.1.6",
+    "@vitejs/plugin-basic-ssl": "^0.1.2",
     "idb": "^7.0.2",
     "lit": "^2.3.1",
     "mobx": "^6.6.1"

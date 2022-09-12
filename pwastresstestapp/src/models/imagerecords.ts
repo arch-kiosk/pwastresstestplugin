@@ -1,6 +1,6 @@
 import {dbPWA} from "./dbpwa";
 
-interface ImageRecord {
+export interface ImageRecord {
     uid: string
     res: string
     modified: string
@@ -14,13 +14,21 @@ export class ImageRecords {
             {res: r.res, modified: r.modified},r.uid)
     }
 
-    // async load() {
-    //     let db = (await dbSettings)
-    //     let settings = await db.get('settings','settings')
-    //     this.server_address = settings.server_address
-    //     this.user_id = settings.userid
-    //     this.dock_id = settings.dockid
-    //     this.password = settings.password
-    // }
+    async load(): Promise<Array<ImageRecord>> {
+        let db = (await dbPWA)
+        let keys = await db.getAllKeys("imagerecords")
+        let result: Array<ImageRecord> = []
+        for (const k of keys) {
+            let record = await db.get("imagerecords", k)
+            result.push({
+                uid: k.toString(),
+                res: record.res,
+                modified: record.modified
+                })
+        }
+        return new Promise((resolve) => {
+            resolve(result)
+        })
+    }
 }
 

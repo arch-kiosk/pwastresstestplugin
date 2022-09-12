@@ -13,15 +13,19 @@ import local_css from "./component-pwastresstest-app.sass";
 
 import {Settings} from "./models/settings";
 // @ts-ignore
+// @ts-ignore
 import { observable, action } from 'mobx';
 import {appState, STATE_IDLE, STATE_IN_THE_FIELD} from "./models/state";
 import {PWAKioskApi} from "./lib/pwakioskapi";
 import {FetchException} from "./lib/kioskapi";
 import {DownloadWorkerSuccessMessage} from "./downloadworker";
-
+import "./imagecounting"
+// @ts-ignore
+import DownloadWorker from "./downloadworker?worker"
 // @ts-ignore
 @customElement('pwastresstest-app')
 export class PWAStressTestApp extends MobxLitElement {
+  // noinspection JSUnusedGlobalSymbols
   static styles = unsafeCSS(local_css);
   private appState = appState
 
@@ -35,7 +39,7 @@ export class PWAStressTestApp extends MobxLitElement {
   @state()
   private kioskMessage = ""
 
-  private connectMenuItems: [MenuBarItem]= [
+  private connectMenuItems: [MenuBarItem] = [
     {
       text: '-',
       children: [],
@@ -76,46 +80,46 @@ export class PWAStressTestApp extends MobxLitElement {
             } else {
               console.log(`call to initApi failed with (${e.msg}). Api is now in state ${this.kioskApi.status}`)
             }
-         })
+          })
     }
   }
 
   private connectToDock() {
-    this.kioskApi.fetchFromApi("api/syncmanager","dock", {}, "v1", `dock_id=${this.appState.settings.dock_id}`)
+    this.kioskApi.fetchFromApi("api/syncmanager", "dock", {}, "v1", `dock_id=${this.appState.settings.dock_id}`)
         .then((data) => {
           this.kioskError = ""
           console.log(data)
           const state_text: String = data["state_text"]
           if (!state_text.includes("forked")) {
-            this.kioskError = this.appState.settings.dock_id  + " is not in the correct state to connect"
+            this.kioskError = this.appState.settings.dock_id + " is not in the correct state to connect"
           }
           appState.setDocked(true)
         })
         .catch((e: FetchException) => {
           appState.setDocked(false)
           if (e.response && e.response.status == 404) {
-            this.kioskError = this.appState.settings.dock_id  + " does not exist."
-          }
-          else {
+            this.kioskError = this.appState.settings.dock_id + " does not exist."
+          } else {
             this.kioskError = "Network error: " + e
           }
         })
   }
 
-
   private download() {
     this.kioskError = ""
     this.kioskMessage = "Downloading files, hang on ..."
     this.kioskWarning = ""
-    let worker = new Worker("./src/downloadworker", { type: "module" })
+    console.log("creating worker")
+    const worker = new DownloadWorker()
+    console.log("creating worker done")
     let msg = {
       msgId: "init",
+      apiBaseAddress: this.kioskApi.apiBaseAddress,
       apiRoot: this.kioskApi.apiRoot,
       token: this.kioskApi.token,
       dockId: this.appState.settings.dock_id
-
     }
-    worker.onmessage = (e) => {
+    worker.onmessage = (e: MessageEvent) => {
       const msg: DownloadWorkerSuccessMessage = e.data
       console.log("got message from worker:")
       console.log(e)
@@ -127,9 +131,9 @@ export class PWAStressTestApp extends MobxLitElement {
         }
         if (msg.errors > 0 && msg.downloaded == 0) {
           this.kioskError = `All ${msg.errors} files failed to download.`
-        } else if(msg.errors > 0 && msg.downloaded > 0) {
+        } else if (msg.errors > 0 && msg.downloaded > 0) {
           this.kioskWarning = `downloaded ${msg.downloaded} files, ${msg.errors} files failed to download.`
-        } else if(msg.errors == 0) {
+        } else if (msg.errors == 0) {
           this.kioskMessage = `downloaded ${msg.downloaded} files, no errors`
         }
       }
@@ -139,7 +143,7 @@ export class PWAStressTestApp extends MobxLitElement {
 
   menuItemSelected(e: MenuBarItemSelectedEvent) {
     console.log(e.detail.value)
-    switch(e.detail.value.text) {
+    switch (e.detail.value.text) {
       case 'change configuration':
         this.changeConfiguration()
         break;
@@ -211,6 +215,11 @@ export class PWAStressTestApp extends MobxLitElement {
     appState.setApiReady(!appState.apiReady)
   }
 
+  private getTemplateAddress() {
+    return `${this.appState.settings.server_address}/api/v1/files/file`;
+  }
+
+
   private renderDialog = () => html`
     <div>
       <div class="settings-dialog">
@@ -235,7 +244,8 @@ export class PWAStressTestApp extends MobxLitElement {
             @item-selected="${this.menuItemSelected}"
         </vaadin-menu-bar> 
       </div>
-      <span>${this.appState.settings.user_id} accessing ${this.appState.settings.server_address}${appState.docked?html`/${this.appState.settings.dock_id}`:nothing}</span> 
+      <span>${this.appState.settings.user_id} accessing ${this.appState.settings.server_address}${appState.docked?html`/${this.appState.settings.dock_id}`:nothing}</span>
+      ${this.appState.currentState == STATE_IN_THE_FIELD?html`<image-counting templateaddress=${this.getTemplateAddress()}></image-counting>`:nothing}
       <vaadin-dialog
           header-title="settings"
           .opened="${this.dialogOpened}"

@@ -103,7 +103,6 @@ class AppState {
                 break
         }
         return [result]
-
     }
     async saveState() {
         let db = (await dbPWA)
