@@ -7,11 +7,12 @@
   font-style: normal;
   font-weight: 900;
   font-display: auto;
-  src: url("/static/assets/fonts/fontawesome5/fa-solid-900.eot");
-  src: url("/static/assets/fonts/fontawesome5/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("/static/assets/fonts/fontawesome5/fa-solid-900.woff2") format("woff2"), url("/static/assets/fonts/fontawesome5/fa-solid-900.woff") format("woff"), url("/static/assets/fonts/fontawesome5/fa-solid-900.ttf") format("truetype"), url("/static/assets/fonts/fontawesome5/fa-solid-900.svg#fontawesome") format("svg");
+  src: url("/assets/fontawesome5/fa-solid-900.eot");
+  src: url("/assets/fontawesome5/fa-solid-900.eot?#iefix") format("embedded-opentype"), url("/assets/fontawesome5/fa-solid-900.woff2") format("woff2"), url("/assets/fontawesome5/fa-solid-900.woff") format("woff"), url("/assets/fontawesome5/fa-solid-900.ttf") format("truetype"), url("/assets/fontawesome5/fa-solid-900.svg#fontawesome") format("svg");
 }
 .fa,
 .fas {
+  /*noinspection CssNoGenericFontName*/
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
 }
