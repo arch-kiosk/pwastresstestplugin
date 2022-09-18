@@ -1,0 +1,25 @@
+@import "lib/styles/constants"
+
+\:host
+  @extend .imagelist-background
+  display: block
+  border: 2px solid black
+  margin: 1em 0 1em 0
+  padding: 1em
+
+.imagelist
+  display: flex
+  flex-wrap: wrap
+  grid-auto-columns: max-content
+.image-box
+  display: flex
+  flex-direction: column
+  background: white
+  width: 128px
+  height: 128px
+  margin: 2px
+  align-items: center
+.image-index
+  margin-bottom: 2px
+.image-desc
+  font-size: .6em

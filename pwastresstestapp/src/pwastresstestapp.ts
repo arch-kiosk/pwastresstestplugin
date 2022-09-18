@@ -20,6 +20,7 @@ import {PWAKioskApi} from "./lib/pwakioskapi";
 import {FetchException} from "./lib/kioskapi";
 import {DownloadWorkerSuccessMessage} from "./downloadworker";
 import "./imagecounting"
+import "./imagelist"
 // @ts-ignore
 import DownloadWorker from "./downloadworker?worker"
 // @ts-ignore
@@ -245,7 +246,10 @@ export class PWAStressTestApp extends MobxLitElement {
         </vaadin-menu-bar> 
       </div>
       <span>${this.appState.settings.user_id} accessing ${this.appState.settings.server_address}${appState.docked?html`/${this.appState.settings.dock_id}`:nothing}</span>
-      ${this.appState.currentState == STATE_IN_THE_FIELD?html`<image-counting templateaddress=${this.getTemplateAddress()}></image-counting>`:nothing}
+      ${this.appState.currentState == STATE_IN_THE_FIELD?html`
+        <image-counting templateaddress=${this.getTemplateAddress()}></image-counting>
+        <image-list templateaddress=${this.getTemplateAddress()}></image-list>
+      `:nothing}
       <vaadin-dialog
           header-title="settings"
           .opened="${this.dialogOpened}"

@@ -36,7 +36,7 @@ export default defineConfig(({mode}) => {
                 filename: 'sw.js',
                 registerType: 'autoUpdate',
                 devOptions: {
-                    enabled: true,
+                    enabled: false,
                     type: "module",
                     navigateFallback: 'index.html'
                 },

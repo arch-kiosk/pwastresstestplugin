@@ -3,6 +3,7 @@ import '@vaadin/vaadin-menu-bar/vaadin-menu-bar.js';
 import { MenuBarItemSelectedEvent } from "@vaadin/vaadin-menu-bar";
 import '@vaadin/dialog';
 import "./imagecounting";
+import "./imagelist";
 export declare class PWAStressTestApp extends MobxLitElement {
     static styles: import("lit").CSSResult;
     private appState;
