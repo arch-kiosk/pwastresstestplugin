@@ -11,18 +11,18 @@ export default defineConfig(({mode}) => {
         build: {
             emptyOutDir: true,
         },
-        server: {
+        server: mode === "production" ? {} : {
             https: {
-                key: fs.readFileSync('./server.key'),
-                cert: fs.readFileSync('./server.crt')
+                key: fs.readFileSync('cert/server.key'),
+                cert: fs.readFileSync('cert/server.crt')
             }
         },
-        preview: {
+        preview: mode === "production" ? {} : {
             host: true,
             port: 443,
             https: {
-                key: fs.readFileSync('server.key'),
-                cert: fs.readFileSync('server.crt'),
+                key: fs.readFileSync('cert/server.key'),
+                cert: fs.readFileSync('cert/server.crt'),
             },
         },
         // publicDir: "dev-dist",
