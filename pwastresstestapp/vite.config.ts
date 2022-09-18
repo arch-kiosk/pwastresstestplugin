@@ -1,7 +1,8 @@
 import {defineConfig, loadEnv} from 'vite'
 import {VitePWA} from 'vite-plugin-pwa'
 import {createHtmlPlugin} from "vite-plugin-html";
-import basicSsl from '@vitejs/plugin-basic-ssl'
+// import basicSsl from '@vitejs/plugin-basic-ssl'
+import fs from 'fs';
 
 export default defineConfig(({mode}) => {
     const env = loadEnv(mode, "env");
@@ -11,7 +12,18 @@ export default defineConfig(({mode}) => {
             emptyOutDir: true,
         },
         server: {
-            https: true
+            https: {
+                key: fs.readFileSync('./server.key'),
+                cert: fs.readFileSync('./server.crt')
+            }
+        },
+        preview: {
+            host: true,
+            port: 443,
+            https: {
+                key: fs.readFileSync('server.key'),
+                cert: fs.readFileSync('server.crt'),
+            },
         },
         // publicDir: "dev-dist",
         plugins: [
@@ -24,7 +36,7 @@ export default defineConfig(({mode}) => {
                 filename: 'sw.js',
                 registerType: 'autoUpdate',
                 devOptions: {
-                    enabled: false,
+                    enabled: true,
                     type: "module",
                     navigateFallback: 'index.html'
                 },
@@ -50,11 +62,12 @@ export default defineConfig(({mode}) => {
                     'favicon-32x32.png',
                     'favicon-96x96.png'],
                 manifest: {
-                    name: 'Kiosk PWAStressTestApp',
-                    short_name: 'PWAStressTestApp',
-                    description: 'Proof of concept for a Kiosk-based recording system that runs only in a Browser',
-                    theme_color: '#ffffff',
-                    icons: [
+                    "name": 'Kiosk PWAStressTestApp',
+                    "short_name": 'PWAStressTestApp',
+                    "description": 'Proof of concept for a Kiosk-based recording system that runs only in a Browser',
+                    "display": "fullscreen",
+                    "theme_color": '#ffffff',
+                    "icons": [
                         {
                             "src": "android-icon-36x36.png",
                             "sizes": "36x36",
@@ -100,7 +113,7 @@ export default defineConfig(({mode}) => {
                     }
                 }
             }),
-            basicSsl()
+            // basicSsl()
         ]
     }
 })
