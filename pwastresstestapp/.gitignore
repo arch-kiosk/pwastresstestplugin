@@ -28,7 +28,8 @@ dev-dist
 *.sln
 *.sw?
 
-/server.crt
-/server.key
-/server.csr
-/ca.pem
+server.crt
+server.key
+server.csr
+ca.pem
+/cert

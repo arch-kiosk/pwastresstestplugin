@@ -17,14 +17,15 @@ export default defineConfig(({mode}) => {
                 cert: fs.readFileSync('cert/server.crt')
             }
         },
-        preview: mode === "production" ? {} : {
+        // @ts-ignore
+        preview: mode === "preview" ? {
             host: true,
             port: 443,
             https: {
                 key: fs.readFileSync('cert/server.key'),
                 cert: fs.readFileSync('cert/server.crt'),
             },
-        },
+        }: {},
         // publicDir: "dev-dist",
         plugins: [
             VitePWA({
