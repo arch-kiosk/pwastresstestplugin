@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* MaterialDesignIcons.com */
 @font-face {
   font-family: "Material Design Icons";
@@ -13991,7 +13990,7 @@
 }
 
 .mdi-blank:before {
-  content: "";
+  content: "\f68c";
   visibility: hidden;
 }
 
@@ -14019,7 +14018,7 @@
 }
 
 .mdi-light:before {
-  color: white;
+  color: rgb(255, 255, 255);
 }
 .mdi-light.mdi-inactive:before {
   color: rgba(255, 255, 255, 0.3);
