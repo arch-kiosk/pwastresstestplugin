@@ -13,6 +13,7 @@ callgrind*.*
 *.dmp
 *.out
 /temp/
+*.css
 *.css.map
 *.pstat
 *.zip
