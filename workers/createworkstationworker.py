@@ -35,9 +35,6 @@ class CreateWorkstationWorker(WorkstationManagerWorker):
                 ws_id = self.job.job_data["workstation_id"]
                 ws_name = self.job.job_data["description"]
                 recording_group = self.job.job_data["recording_group"]
-                # gmt_time_zone = self.job.job_data["gmt_time_zone"]
-                # options = self.job.job_data["options"]
-                # grant_access_to = self.job.job_data["grant_access_to"] if self.job.job_data["grant_access_to"] else "*"
 
                 json_message = create_workstation()
                 if json_message == "ok":

@@ -30,7 +30,7 @@ class KioskPWAStressTestForm(FlaskForm, KioskGeneralFormErrors):
                                                       "A recording group is mandatory")]
                                               )
     grant_access_to = KioskLabeledStringField(label="grant access to")
-    gmt_time_zone = KioskLabeledStringField(label="time zone")
+    time_zone_index = KioskLabeledStringField(label="time zone")
 
     options = KioskLabeledStringField(label="workstation options")
 
@@ -39,10 +39,10 @@ class KioskPWAStressTestForm(FlaskForm, KioskGeneralFormErrors):
         if mode == "edit":
             self.workstation_id.render_kw = {'disabled': ''}
 
-    def validate_gmt_time_zone(self, field):
+    def validate_time_zone_index(self, field):
         if field.data:
             try:
-                offset = local_time_offset_str(field.data)
+                raise NotImplementedError
             except:
                 raise ValidationError(f"That is not a valid time zone. "
                                       f"You want something like GMT+1 or UTC-2 if at all. ")

@@ -119,9 +119,6 @@ def create_pwa_stress_test_dock(form, general_errors: [str]) -> str:
             job.job_data = {"workstation_id": kioskstdlib.delete_any_of(workstation_id, " *%\"'"),
                             "description": form.description.data,
                             "recording_group": form.recording_group.data
-                            # "gmt_time_zone": form.gmt_time_zone.data,
-                            # "grant_access_to": form.grant_access_to.data,
-                            # "options": form.options.data
                             }
             job.meta_data = [JOB_META_TAG_WORKSTATION]
             job.queue()
