@@ -1,7 +1,7 @@
 from werkzeug import datastructures
 
 import kioskstdlib
-import kioskdatetimelibx
+import kioskdatetimelib
 from dsd.dsd3 import DataSetDefinition
 from dsd.dsd3singleton import Dsd3Singleton
 from dsd.dsdview import DSDView
